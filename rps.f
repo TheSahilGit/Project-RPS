@@ -16,7 +16,7 @@ c date 03/04/2020
 
 
         implicit double precision (a-h,o-z)
-        parameter(N=500,mcstep=N*N,nav=1,itmax=1e4)
+        parameter(N=1000,mcstep=N*N,nav=1,itmax=1e4)
         integer lattice(N,N),ip(N),im(N),num(0:3)
         double precision d(3),r(3),p(3),frac(0:3),rho(0:3,0:itmax)
 
@@ -51,17 +51,28 @@ c date 03/04/2020
 *********************************************************
 *      Assigning probability
 *********************************************************
-       d(1) = 0.05d0
-       d(2) = 0.05d0
-       d(3) = 0.05d0
+      
+       
+      
 
-       r(1) = 0.2d0
-       r(2) = 0.2d0
-       r(3) = 0.2d0
+       d(1) = 0.0d0
+       d(2) = 0.0d0
+       d(3) = 0.0d0
 
-       p(1) = 0.4d0
-       p(2) = 0.4d0
-       p(3) = 0.4d0
+       r(1) = 1.0d0
+       r(2) = 1.0d0
+       r(3) = 1.0d0
+
+       p(1) = 1.0d0
+       p(2) = 1.0d0
+       p(3) = 1.0d0
+       
+       
+       
+       
+       hop = 0.75d0
+       
+
 *********************************************************
 *      Calculation of fixed points
 *********************************************************
@@ -174,8 +185,18 @@ c date 03/04/2020
 
 
                  ispinj=lattice(inext,jnext)
-
-
+                 
+                 
+                 hr = random(iseed)
+                 if(hr.lt.hop)then
+                    if(ispini.ne.ispinj) then
+                       tempo = ispini
+                       ispini=ispinj
+                       ispinj=tempo
+                     end if
+                     goto 111
+                 end if 
+                   
                  if(ispini.ne.0) then
                    dr = random(iseed)
                    if(dr.lt.d(ispini)) then
@@ -209,17 +230,20 @@ c date 03/04/2020
                      goto 111
                    endif
 
-                   if(ispinj.eq.0) then
-                    
+                   if(ispinj.eq.0) then                   
                      rr = random(iseed)
                      if(rr.lt.r(ispini)) then
                        ispinj=ispini
-                     endif
-                      
+                     endif                     
                      goto 111
                    endif
-                 endif
+                   
 
+
+
+
+                 endif   ! Ends ispini.ne.0
+                 
 111              lattice(ino,jno)=ispini
                  lattice(inext,jnext)=ispinj
 
@@ -288,9 +312,9 @@ c           if(mod(iit,100000).eq.0)
            write(10,*) iit,rho(1,iit)/nav,rho(2,iit)/nav,rho(3,iit)/nav
         enddo
         
-        write(333,*)'#	N	itp1	itp2	itp3	d	r	p'
+        write(333,*)'#	N	itp1	itp2	itp3	d	r	p	hop'
         do i=1,3
-        	write(333,*)N,itp1,itp2,itp3,itp4,d(i),r(i),p(i)
+        	write(333,*)N,itp1,itp2,itp3,itp4,d(i),r(i),p(i),hop
         end do
 
        
@@ -316,6 +340,5 @@ c      Random number generating function
         return
         end
 *********************************************************
-
 
 
