@@ -52,25 +52,36 @@ c date 03/04/2020
 *      Assigning probability
 *********************************************************
       
+       diffusion = 3.0e-6
+       eps = 2*N*N*diffusion
+       death = 0.5d0
+       rep = 1.0d0
+       pred = 1.0d0
        
+       !Normalization 
+       
+       hop_norm = (eps)/(eps+death+rep+pred)
+       death_norm = (death)/(eps+death+rep+pred)
+       rep_norm = (rep)/(eps+death+rep+pred)
+       pred_norm = (pred)/(eps+death+rep+pred)
       
 
-       d(1) = 0.0d0
-       d(2) = 0.0d0
-       d(3) = 0.0d0
+       d(1) = death_norm
+       d(2) = death_norm
+       d(3) = death_norm
 
-       r(1) = 1.0d0
-       r(2) = 1.0d0
-       r(3) = 1.0d0
+       r(1) = rep_norm
+       r(2) = rep_norm
+       r(3) = rep_norm
 
-       p(1) = 1.0d0
-       p(2) = 1.0d0
-       p(3) = 1.0d0
+       p(1) = pred_norm
+       p(2) = pred_norm
+       p(3) = pred_norm
+       
+       write(*,*)hop_norm, death_norm, pred_norm, rep_norm
        
        
-       
-       
-       hop = 0.75d0
+       hop = hop_norm
        
 
 *********************************************************
@@ -325,6 +336,8 @@ c           if(mod(iit,100000).eq.0)
         close(458)
         close(459)
         close(460)
+        
+        
         end
 
 
