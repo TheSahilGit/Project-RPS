@@ -14,32 +14,42 @@ c lattice at multiple time steps
 
 c date 03/04/2020
 
-
         implicit double precision (a-h,o-z)
-        parameter(N=500,mcstep=N*N,nav=1,itmax=1e4)
-        integer lattice(N,N),ip(N),im(N),num(0:3)
+        parameter(N=500,mcstep=N*N,nav=10,itmax=8.0e4)
+        integer lattice(N,N),ip(N),im(N),num(0:3),step,count
         double precision d(3),r(3),p(3),frac(0:3),rho(0:3,0:itmax)
 
 
-        itp1 = itmax/6
+	step=1
+
+        itp1 = itmax/4
         itp2 = 2*itmax/4
         itp3 = 3*itmax/4
         itp4 = itmax
 
-       
+
         open(10,file='density-time-astable')
         open(20,file='fixed-point-astable')
-        
-        
+
+
         open(456, file='lattice0')
         open(457,file='lattice1')
         open(458, file='lattice2')
         open(459, file='lattice3')
         open(460, file='lattice4')
+        
+        open(461,file='latticeFinal.txt')
 
 	open(333, file='initials')
+	open(334, file='initials2')
+
+	open(11, file='final-density')
 	
-        
+	open(2545, file='extictionprob')
+
+
+
+
 
 
         do ii = 0,3
@@ -51,17 +61,50 @@ c date 03/04/2020
 *********************************************************
 *      Assigning probability
 *********************************************************
-       d(1) = 0.05d0
-       d(2) = 0.05d0
-       d(3) = 0.05d0
 
-       r(1) = 0.2d0
-       r(2) = 0.2d0
-       r(3) = 0.2d0
+       diffusion = 4.0e-3
+       eps = 2*N*N*diffusion
 
-       p(1) = 0.4d0
-       p(2) = 0.4d0
-       p(3) = 0.4d0
+       death = 2.0d0
+       rep = 7.0d0
+       pred = 7.0d0
+
+       !Normalization
+
+       tot = eps+death+rep+pred
+       hop_norm = eps/tot
+       death_norm = death/tot
+       rep_norm = rep/tot
+       pred_norm = pred/tot
+
+
+       !Unnormalization!
+      ! hop_norm = 0.7d0
+      ! death_norm = 0.0d0
+      ! rep_norm = 0.03d0
+      ! pred_norm = 0.03d0
+
+       d(1) = death_norm
+       d(2) = death_norm
+       d(3) = death_norm
+
+       r(1) = rep_norm
+       r(2) = rep_norm
+       r(3) = rep_norm
+
+       p(1) = pred_norm
+       p(2) = pred_norm
+       p(3) = pred_norm
+
+
+
+       hop = hop_norm
+
+       !write(*,*)hop_norm, death_norm, pred_norm, rep_norm
+
+
+
+
 *********************************************************
 *      Calculation of fixed points
 *********************************************************
@@ -72,25 +115,30 @@ c date 03/04/2020
        bfix = ((q*r(3))-(d(3)))/p(2)
        cfix = ((q*r(1))-(d(1)))/p(3)
 
-       
+
 
        write(20,*) '# d(1), r(1), p(1)',d(1),r(1),p(1)
        write(20,*) '# d(2), r(2), p(2)',d(2),r(2),p(2)
        write(20,*) '# d(3), r(3), p(3)',d(3),r(3),p(3)
        write(20,*) '# afix, bfix, cfix',afix,bfix,cfix
 
-       
+
 
 *********************************************************
 * Averaging with different iseed
 *********************************************************
-        m = 56762
-       do iim = 1,nav
+        m = 548512
+        
+        count=0
+        
+        do iim = 1,nav
           m = m + 1
           iseed = m
+
+
 *********************************************************
 *      INITIALIZING LATTICE
-********************************************************* 
+*********************************************************
         do ii = 0,3
            num(ii) = 0
         enddo
@@ -139,7 +187,7 @@ c date 03/04/2020
 
 
 
-        do it = 1, itmax
+        do it = 1, itmax, step
            do k=1,mcstep
 666           xn=random(iseed)
               xn=(xn*(N)) + 1.d0
@@ -153,7 +201,7 @@ c date 03/04/2020
 
                  ispini=lattice(ino,jno)
 
-                 xr= random(iseed)               
+                 xr= random(iseed)
                  if(random(iseed).lt.0.5) then
                    if(xr.lt.0.5)then
                      inext=ip(ino)
@@ -170,58 +218,49 @@ c date 03/04/2020
                    inext=ino
                  endif
 
-                 if(inext.gt.N.or.jnext.gt.N) goto 666         
+                 if(inext.gt.N.or.jnext.gt.N) goto 666
 
 
                  ispinj=lattice(inext,jnext)
 
+c  The code for interactions begins here.
 
-                 if(ispini.ne.0) then
-                   dr = random(iseed)
-                   if(dr.lt.d(ispini)) then
-                     ispini=0
 
-                     goto 111
-                   endif
-                   ran = random(iseed)
-                   if(ispini.eq.1.and.ispinj.eq.2) then
-                     if(ran.lt.p(ispini)) ispinj=0
-                     goto 111
-                   endif
-                   if(ispini.eq.1.and.ispinj.eq.3) then
-                     if(ran.lt.p(ispinj)) ispini=0
-                     goto 111
-                   endif
-                   if(ispini.eq.2.and.ispinj.eq.1) then
-                     if(ran.lt.p(ispinj)) ispini=0
-                     goto 111
-                   endif
-                   if(ispini.eq.2.and.ispinj.eq.3) then
-                     if(ran.lt.p(ispini)) ispinj=0
-                     goto 111
-                   endif
-                   if(ispini.eq.3.and.ispinj.eq.1) then
-                     if(ran.lt.p(ispini)) ispinj=0
-                     goto 111
-                   endif
-                   if(ispini.eq.3.and.ispinj.eq.2) then
-                     if(ran.lt.p(ispinj)) ispini=0
-                     goto 111
-                   endif
+                aa = hop+pred_norm
+       	        ab = aa + rep_norm
 
-                   if(ispinj.eq.0) then
-                    
-                     rr = random(iseed)
-                     if(rr.lt.r(ispini)) then
-                       ispinj=ispini
-                     endif
-                      
-                     goto 111
-                   endif
-                 endif
+                rand = random(iseed)
 
-111              lattice(ino,jno)=ispini
-                 lattice(inext,jnext)=ispinj
+                if(rand.le.hop) goto 121
+                if(rand.gt.hop.and.rand.le.aa) goto 122
+                if(rand.gt.aa.and.rand.le.ab) goto 123
+                if(rand.gt.ab.and.rand.le.1.d0) goto 124
+
+
+121             if(ispini.ne.ispinj) then
+                  tempo = ispini
+                  ispini=ispinj
+                  ispinj=tempo
+                end if
+                goto 111
+
+
+122             if(ispini.eq.1.and.ispinj.eq.2) ispinj=0
+                if(ispini.eq.1.and.ispinj.eq.3) ispini=0
+                if(ispini.eq.2.and.ispinj.eq.1) ispini=0
+                if(ispini.eq.2.and.ispinj.eq.3) ispinj=0
+                if(ispini.eq.3.and.ispinj.eq.1) ispinj=0
+                if(ispini.eq.3.and.ispinj.eq.2) ispini=0
+                goto 111
+
+123             if(ispini.ne.0.and.ispinj.eq.0) ispinj=ispini
+                goto 111
+
+124             if(ispini.ne.0) ispini=0
+
+
+111             lattice(ino,jno)=ispini
+                lattice(inext,jnext)=ispinj
 
            enddo ! ends mcstep
 
@@ -245,7 +284,7 @@ c date 03/04/2020
 *********************************************************
            if(it.eq.itp1) then
              do ii = 1,N
-                do jj = 1,N                 
+                do jj = 1,N
                    write(457,*)lattice(ii,jj)
                 enddo
              enddo
@@ -253,7 +292,7 @@ c date 03/04/2020
 
            if(it.eq.itp2) then
              do ii = 1,N
-                do jj = 1,N                                    
+                do jj = 1,N
                    write(458,*)lattice(ii,jj)
                 enddo
              enddo
@@ -261,7 +300,7 @@ c date 03/04/2020
 
            if(it.eq.itp3) then
              do ii = 1,N
-                do jj = 1,N                  
+                do jj = 1,N
 	          write(459,*)lattice(ii,jj)
                 enddo
              enddo
@@ -269,31 +308,64 @@ c date 03/04/2020
 
 	if(it.eq.itp4) then
              do ii = 1,N
-                do jj = 1,N                  
+                do jj = 1,N
 	          write(460,*)lattice(ii,jj)
                 enddo
              enddo
            endif
+
+        !Writing the final lattice in a different way.
+        !This is for the correlation code.
+        
+         if(it.eq.itp4) then
+             do ii = 1,N
+                do jj = 1,N
+	          write(461,*)ii,jj,lattice(ii,jj)
+                enddo
+             enddo
+           endif
+
 *********************************************************
 
         enddo ! ends it
+        
+        if(frac(1).lt.0.001)then
+         count=count+1
+         
+        else if(frac(2).lt.0.001)then
+         count=count+1
+
+        else if(frac(3).lt.0.001)then
+         count=count+1
+        end if
 
         write(*,*) 'completed step',iim
 
         enddo ! ends iim
+        
+        write(2545,*)diffusion,count,nav,count/dfloat(nav)
+        
 
         write(10,*) '#time 	fracN1		fracN2		fracN3'
-        do iit = 0,itmax
-c           if(mod(iit,100000).eq.0) 
+        do iit = 1,itmax,step
+c           if(mod(iit,100000).eq.0)
            write(10,*) iit,rho(1,iit)/nav,rho(2,iit)/nav,rho(3,iit)/nav
         enddo
-        
-        write(333,*)'#	N	itp1	itp2	itp3	d	r	p'
-        do i=1,3
-        	write(333,*)N,itp1,itp2,itp3,itp4,d(i),r(i),p(i)
-        end do
 
-       
+        write(333,*)'#	N	itp1	itp2	itp3	d	r	p	hop'
+        do i=1,3
+        	write(333,*)N,itp1,itp2,itp3,itp4,d(i),r(i),p(i),hop
+        end do
+        
+        write(334,*)'#  N   D  death  rep  pred'
+        write(334,*)N,diffusion,death,rep,pred
+
+
+        write(11,*)iseed, rho(1,itmax),rho(2,itmax),rho(3,itmax)
+
+
+
+
         close(10)
         close(20)
         close(456)
@@ -301,8 +373,18 @@ c           if(mod(iit,100000).eq.0)
         close(458)
         close(459)
         close(460)
-        end
+        close(461)
+        close(11)
+        close(333)
+        close(334)
+        close(2545)
 
+
+
+
+
+
+      end
 
 *********************************************************
 c      Random number generating function
@@ -316,6 +398,4 @@ c      Random number generating function
         return
         end
 *********************************************************
-
-
 
