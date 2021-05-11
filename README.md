@@ -1,2 +1,2 @@
 # Project-RPS
-Evolutionary RPS model ny Monte Carlo
+Evolutionary RPS model by Monte Carlo
