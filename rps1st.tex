@@ -1,0 +1,170 @@
+ %\documentclass[aps,prl,floatfix,12pt]{revtex4}
+\documentclass[aps, prl, twocolumn, amsmath, superscriptaddress,showkeys,showpacs]{revtex4-2}
+%\documentclass[aps,prb,floatfix,12pt]{revtex4}
+%\documentclass[aps,preprint,floatfix]{revtex4}
+%\documentclass[aps,12pt]{revtex4}
+
+\usepackage{commath}
+\usepackage[innercaption]{sidecap}
+\usepackage{amssymb}
+\usepackage{graphicx}% Include figure files
+\usepackage{graphicx,epstopdf}
+\usepackage{xcolor, soul}
+\usepackage{dcolumn}% Align table columns on decimal point
+\usepackage{bm}% bold math
+\usepackage{mathrsfs} % script-like, curvy letters.
+\usepackage{amsmath} %curvy letters.
+\usepackage[colorlinks=true,linkcolor=blue,citecolor=blue]{hyperref}%
+%\usepackage[english]{babel}
+\usepackage{fontenc}
+\usepackage{float}
+\usepackage{amsthm}
+\usepackage{subfigure}
+\usepackage{color}
+\usepackage{ragged2e}
+%\usepackage{bm}
+%\usepackage{multirow}
+\usepackage{enumerate}
+%\usepackage{subcaption}
+%\usepackage{ragged2e}
+%\usepackage{subfigure}
+\usepackage{hyperref}
+%\usepackage[a4paper]{geometry}
+%\geometry{top=1in,bottom=0.7in}
+\topmargin=-.25in
+
+
+\def\be{\begin{equation}}
+	\def\ee{\end{equation}}
+\def\bea{\begin{eqnarray}}
+	\def\eea{\end{eqnarray}}
+\def\bfg{\begin{figure}[H]}
+	\def\efg{\end{figure}}
+
+
+
+\begin{document}
+	
+	\title{Diffusion induced revival of species in presence of natural death.}
+	\author{Sahil Islam} 
+	
+	\email{thesahil.islam@gmail.com}
+	
+	\affiliation{Department of Physics, Jadavpur University}
+	
+	
+	\author{Argha Mondal}
+	\affiliation{hhg}
+	
+	\author{Sirshendu Bhattacharyya} 
+	
+	\email{sirs.bh@gmail.com}
+	
+	\affiliation{Department of Physics, R.R.R Mahavidyalaya,
+		Radhanagar, Hooghly 712406, India}
+	
+	\author{Chittaranjan Hens}
+	
+	\email{chittaranjanhens@gmail.com}
+	
+	\affiliation{Physics and Applied Mathematics Unit, Indian Statistical Institute, Kolkata 700108, India}
+
+
+\begin{abstract}
+	\noindent
+	
+\end{abstract}	
+		
+	\maketitle
+
+\section{Introduction}
+\label{intro}
+\noindent
+	 In Earth's ecosystem, biodiversity is maintained by the coexistance of different species that are connected by some naturally governed phenomenon like birth, death, predation etc. Coexistance or extiction through interaction of these kind of species have been studied for a long time in both ecology \citep{tainaka2000physics}  and non linear science \citep{may1975nonlinear}. This kind of systems are usually studied using some models like Lotka-Volterra Model\citep{bacaer2011lotka} or May-Leonard Formalism \citep{chi1998asymmetric} etc. Evolutionary Rock-Paper-Scissor(RPS) model \citep{sinervo1996rock} is one of them which has been widely used\citep{arunachalam2020rock, kerr2002local, park2019fitness, reichenbach2007mobility, hashimoto2018clustering}. This kind of model(RPS) deals with interaction between three species with cyclic predation-prey relations. Colony formation and coexistance of several microbes \citep{ke2020effects, momeni2017lotka},parasites \citep{cameron2009parasite, segura2013competition} etc. have been studied using these kind of formalisms. It has been studied that parameters like system size, mobility, interaction region, individual mortality affects the stability and evolution of the system in a sygnificant manner. It has been observed that static species forms colony in a two dimensional system to survive when hunting is  going on. But mobile species i.e. species having some kind of exchange probability or hopping probability shows spiral patterns\citep{reichenbach2008self, avelino2012junctions, avelino2018directional} in 2D systems. These spirals grow in size depending on the rate of exchange . Though it has been seen that after a critical value of the hopping rate, the system shows anomalus behaviour where only one species survives and other two gets extinct. This is because the spiral size become larger than the system size so any one of those species occupies the whole system \citep{reichenbach2007mobility}. Again, if we introduce natural death rate to the systems where species interact via predation-prey relations, we see that this new parameter dominates the effect of the birth or predation rates. A little change in the death rate may lead the system to get extinct or make any one species predominant than other\citep{bhattacharyya2020mortality}.
+	
+	\par In this article using Monte-Carlo simulations \citep{mooney1997monte, zio2013monte} we have explored the effect of mobilty in a RPS system where the species have a certain lifetime i.e. they can die at a rate irrespective of any other parameter like predation or reproduction . In section \ref{simulation} we have explained the model, conditions of the simulation and equations supporting the model. We have explored how the average density of the competeting species change due to simultaneous change in death rate and diffusion rate(mobility). We have also examined the change in correlation function and correlation length due to those two parameters. High value of diffusion can lead the system to extinction \citep{reichenbach2007mobility} we explored the extinction probability and how the probability changes with increasing death rate.\\
+	We have seen that moblity can dominate the effect of death and increase the species density in high death region where immobile species gets extinct. We have seen that death increases the correlation length upto a certain value but in low mobility region the correlation lengths suddenly decreases due to the dominance of natural death. But with increasing mobility the effect of death has been compromised and we get high value of correlation.\\
+
+
+\section{The Model and The Monte Carlo simulation}
+\label{simulation}
+
+\noindent
+We considered three species in a two dimentional lattice where each lattice site can either have one species or be vacant. In the begining of the simulation the species and vacancies are randomly oriented. Then we perform MC simulation on them  governed by some predefined interation conditions such as reproduction, predation death and mobility.\\
+If we denote the species by $A,B$ and $C$, and the vacancies by $V$, then without the mobility the interactions are like: 
+
+In cyclic predation system each species predates the next species in their cyclic permutaion and makes the site vacant:
+\bea
+A + B & \longrightarrow & A + V \;\;\; \mbox{with rate}\;\; p_a\nonumber \\
+B + C & \longrightarrow & B + V \;\;\; \mbox{with rate}\;\; p_b\nonumber \\
+C + A & \longrightarrow & C + V \;\;\; \mbox{with rate}\;\; p_c
+\label{predation}
+\eea 
+
+If a lattice site is vacant to a species then they reproduce another one of them at that very site:
+\bea
+A + V & \longrightarrow & A + A \;\;\; \mbox{with rate}\;\; r_a\nonumber \\
+B + V & \longrightarrow & B + B \;\;\; \mbox{with rate}\;\; r_b\nonumber \\
+C + V & \longrightarrow & C + C \;\;\; \mbox{with rate}\;\; r_c
+\label{reproduction}
+\eea
+
+Thirdly each species has their natural lifetime or death rate where species at a certain site dies ans make that site vacant:
+\bea
+A + \varphi & \longrightarrow & V + \varphi \;\;\; \mbox{with rate}\;\; d_a \nonumber \\
+B + \varphi & \longrightarrow & V + \varphi \;\;\; \mbox{with rate}\;\; d_b\nonumber \\
+C + \varphi & \longrightarrow & V + \varphi \;\;\; \mbox{with rate}\;\; d_c
+\label{death}
+\eea	       
+
+Lastly we have considered that the species can exchange their positions with the nearest species or vacant site governed by some probability :
+
+\bea
+A + \psi & \longrightarrow & \psi(\neq A) + A \;\;\; \mbox{with rate}\;\; \epsilon_a \nonumber \\
+B + \psi & \longrightarrow & \psi(\neq B) + B \;\;\; \mbox{with rate}\;\; \epsilon_b\nonumber \\
+C + \psi & \longrightarrow & \psi(\neq C) + C \;\;\; \mbox{with rate}\;\; \epsilon_c
+\label{hop}
+\eea
+Here $\psi$ can be either $A,B,C$ or $V$.     
+
+We worked with only nearest neighbour interaction for simplicity and we assumed the lattice to be periodic i.e. if the lattice dimention is $N \times N$, then the $(N+1)^{th}$ site is the $1^{st}$ lattice site in both directions. At each MC step one lattice site is chosen randomly and interactions with the four nearest neighbour is performed. Then the simulation goes to the next site again and choses another site randomly. Simulations have been performed on lattice sizes $1000 \times 1000$ except for the extinction probabilty in high diffusion calculation, where the lattice size is $500\time500$. Total number of MC steps required was from 10000 to 100000 depending on the lattice size and the rate of mobility. We took the reproduction, predation and death rates for all the species to be same i.e.:
+\bea
+r_a=r_b=r_c=r \nonumber\\
+p_a=p_b=p_c=p \nonumber\\
+d_a=d_b=d_c=d \nonumber\\
+\epsilon_a=\epsilon_b=\epsilon_c=\epsilon
+\eea
+
+%\begin{figure*}[ht!]
+	%\hspace*{-5mm}
+%	\includegraphics[scale=0.1]{Diagram1.3.png}	\caption{The cyclic competetion between the species %having a certain birth and death rate(left); Species can exchange position with a vacant space or %other species, but not with the same kind(right).}
+%	\label{fig1}
+%\end{figure*}
+
+
+The exchange process like Eq.~(\ref{hop}) leads to an effective diffusion of the individual species governed by the macroscopic diffusion constant $D$. We connect this diffusion constant $D$ with the exchange rate $\epsilon$ through system size by $\epsilon=d\times N^2 \times D $, [for ref. see \citep{reichenbach2007noise}] here $d$ is the system dimension. In our case this scaling equation would be: $\epsilon=2 \times N^2 \times D $. \\
+In each MC step the interactions happen with a probability normalised by the rates $r,p,d$ and $ \epsilon$ i.e. predation happens with probability $p/(r+p+d+\epsilon)$, reproduction happens with probability $r/(r+p+d+\epsilon)$, natural death happens with probability $d/(r+p+d+\epsilon)$ and the exchange process happens with probability $\epsilon/(r+p+d+\epsilon)$.\\
+The space-time dependence of the species densities can be expressed by these diffusion equations:
+
+\begin{eqnarray}
+	\dfrac{\partial \rho_a(x,y,t)}{\partial t} &=& \rho_a(x,y,t)[r_a \rho_v(x,y,t) - p_c\rho_c(x,y,t) - d_a]+D \nabla^2 \rho_a(x,y,t) \nonumber\\[0.2cm]
+	\dfrac{\partial \rho_b(x,y,t)}{\partial t} &=& \rho_b(x,y,t)[r_b \rho_v(x,y,t) - p_a\rho_a(x,y,t) - d_b]+D \nabla^2 \rho_b(x,y,t) \nonumber\\[0.2cm]
+	\dfrac{\partial \rho_c(x,y,t)}{\partial t} &=& \rho_c(x,y,t)[r_c \rho_v(x,y,t) - p_b\rho_b(x,y,t) - d_c]+D \nabla^2 \rho_c(x,y,t) \\[0.2cm]
+\label{rateeqn}
+\end{eqnarray}
+
+Here $\rho_v(x,y,t)=1-(\rho_a(x,y,t)+\rho(x,y,t)+\rho_c(x,y,t))$ the density of the vaccum.\\[0.2cm]
+ And $\nabla^2 =\dfrac{\partial^2}{\partial x^2} + \dfrac{\partial^2}{\partial x^2} $ i.e. two-dimensional laplacian operator. 
+
+The correlation function is defined by:
+
+
+
+
+
+\section{References}
+\bibliography{bibliography_main}
+\bibliographystyle{apsrev4-1}
+
+	
+\end{document}
